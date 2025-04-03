@@ -11,7 +11,7 @@
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "moduleNameMapper": {
-    "@app/locksmith": "<rootDir>/../libs/locksmith/src",
-    "@app/locksmith/(.*)": "<rootDir>/../libs/locksmith/src/$1"
+    "@nestjs/locksmith": "<rootDir>/src",
+    "@nestjs/locksmith/(.*)": "<rootDir>/src/$1"
   }
 }

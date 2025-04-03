@@ -18,11 +18,11 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@app/locksmith": [
-        "libs/locksmith/src"
+      "@nestjs/locksmith": [
+        "src"
       ],
-      "@app/locksmith/*": [
-        "libs/locksmith/src/*"
+      "@nestjs/locksmith/*": [
+        "src/*"
       ]
     }
   }

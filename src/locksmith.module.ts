@@ -1,12 +1,21 @@
 import { DynamicModule, Logger, Provider } from '@nestjs/common';
-import { LocksmithService } from './locksmith.service';
 import { JwtModule } from '@nestjs/jwt';
+import { JwtAuthGuard } from './guards/jwt.guard';
+import { GoogleAuthGuard } from './guards/google-auth.guard';
+import { MicrosoftAuthGuard } from './guards/microsoft-auth.guard';
+import { GoogleAuthStrategy } from './strategies/google-auth.strategy';
+import { MicrosoftAuthStrategy } from './strategies/microsoft-auth.strategy';
+import { JwtAuthStrategy } from './strategies/jwt.strategy';
+import { AppleAuthGuard } from './guards/apple-auth.guard';
+import { AppleAuthStrategy } from './strategies/apple-auth.strategy';
 
-export interface OauthOptions {
-  clientId: string;
+export interface OAuthOptions {
+  clientID: string;
   clientSecret: string;
-  callbackUrl: string;
+  callbackURL: string;
 }
+
+export const LOCKSMITH_AUTH_SERVICE = 'LOCKSMITH_AUTH_SERVICE';
 
 export interface LocksmithModuleOptions {
   jwt: {
@@ -15,14 +24,23 @@ export interface LocksmithModuleOptions {
     sessionCookieName: string;
   };
   external: {
-    google: OauthOptions;
-    microsoft: OauthOptions;
+    google: OAuthOptions;
+    microsoft: OAuthOptions;
+    apple: {
+      clientID: string;
+      teamID: string;
+      callbackURL: string;
+      keyID: string;
+      privateKeyString: string;
+      passReqToCallback: boolean;
+    };
   };
 }
 
 export class LocksmithModule {
   static forRoot(options?: LocksmithModuleOptions): DynamicModule {
-    const imports: DynamicModule[] = [];
+    const imports: Array<any> = [];
+    const exports: Array<any> = [];
 
     // Initialize JWT if options were provided
     if (options?.jwt) {
@@ -34,7 +52,17 @@ export class LocksmithModule {
           },
         }),
       );
+      exports.push(JwtAuthGuard, JwtAuthStrategy);
     }
+
+    if (options?.external?.apple)
+      exports.push(AppleAuthGuard, AppleAuthStrategy);
+
+    if (options?.external?.google)
+      exports.push(GoogleAuthGuard, GoogleAuthStrategy);
+
+    if (options?.external?.microsoft)
+      exports.push(MicrosoftAuthGuard, MicrosoftAuthStrategy);
 
     // Custom Locksmith Options Provider
     const optionsProvider: Provider = {
@@ -45,8 +73,8 @@ export class LocksmithModule {
     return {
       module: LocksmithModule,
       imports,
-      providers: [optionsProvider, LocksmithService, Logger],
-      exports: [LocksmithService],
+      exports,
+      providers: [optionsProvider, Logger],
     };
   }
 }
