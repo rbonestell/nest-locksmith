@@ -18,15 +18,15 @@ export interface OAuthOptions {
 export const LOCKSMITH_AUTH_SERVICE = 'LOCKSMITH_AUTH_SERVICE';
 
 export interface LocksmithModuleOptions {
-  jwt: {
+  jwt?: {
     secret: string;
     expiresIn: number;
     sessionCookieName: string;
   };
-  external: {
-    google: OAuthOptions;
-    microsoft: OAuthOptions;
-    apple: {
+  external?: {
+    google?: OAuthOptions;
+    microsoft?: OAuthOptions;
+    apple?: {
       clientID: string;
       teamID: string;
       callbackURL: string;
