@@ -81,7 +81,9 @@ export class LocksmithAuthService implements ILocksmithAuthService {
   clearSessionCookie(res: { clearCookie?: (name: string, options?: any) => any }): void {
     const name = this.options?.jwt?.sessionCookieName;
     if (name && typeof res.clearCookie === 'function') {
-      res.clearCookie(name);
+      const opts = this.options?.cookieOptions;
+      if (opts) res.clearCookie(name, opts);
+      else res.clearCookie(name);
     }
   }
 }
