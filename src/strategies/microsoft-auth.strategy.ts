@@ -18,10 +18,12 @@ export class MicrosoftAuthStrategy extends PassportStrategy(
     @Inject('LOCKSMITH_OPTIONS')
     private readonly options: LocksmithModuleOptions,
   ) {
+    /* eslint-disable @typescript-eslint/no-unsafe-argument */
     super({
       ...(options?.external?.microsoft as any),
       scope: ['user.read'],
-    } as any);
+    });
+    /* eslint-enable @typescript-eslint/no-unsafe-argument */
   }
 
   validate(

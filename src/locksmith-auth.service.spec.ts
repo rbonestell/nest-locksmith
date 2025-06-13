@@ -9,14 +9,17 @@ describe('LocksmithAuthService', () => {
       imports: [JwtModule.register({ secret: 'test' })],
       providers: [
         LocksmithAuthService,
-        { provide: 'LOCKSMITH_OPTIONS', useValue: { issuerName: 'MyApp' } },
+        {
+          provide: 'LOCKSMITH_OPTIONS',
+          useValue: { jwt: { issuerName: 'MyApp' } },
+        },
       ],
     }).compile();
 
     const service = moduleRef.get<LocksmithAuthService>(LocksmithAuthService);
     const jwtService = moduleRef.get(JwtService);
 
-    const payload: JwtPayload = { sub: 1, username: 'bob' };
+    const payload: JwtPayload = { sub: '1', username: 'bob' };
     const { accessToken } = await service.createAccessToken(payload);
     const decoded = jwtService.verify(accessToken);
     expect(decoded.iss).toBe('MyApp');

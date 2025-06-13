@@ -13,10 +13,12 @@ export class GoogleAuthStrategy extends PassportStrategy(
     @Inject('LOCKSMITH_OPTIONS')
     private readonly options: LocksmithModuleOptions,
   ) {
+    /* eslint-disable @typescript-eslint/no-unsafe-argument */
     super({
       ...(options?.external?.google as any),
       scope: ['email', 'profile'],
-    } as any);
+    });
+    /* eslint-enable @typescript-eslint/no-unsafe-argument */
   }
 
   validate(_accessToken: string, _refreshToken: string, profile: Profile) {
