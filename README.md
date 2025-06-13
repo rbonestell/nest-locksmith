@@ -83,7 +83,7 @@ export class AuthController {
   ) {}
 
   @Post('login')
-  async login(@Body() user: any, @Res() res: Response) {
+  async login(@Body() user: any, @Res() res: any) {
     // perform your own credential checks here
     const { accessToken } = await this.auth.createAccessToken({
       sub: user.id,
@@ -95,6 +95,20 @@ export class AuthController {
     });
     return res.sendStatus(200);
   }
+}
+```
+
+### Clearing the session cookie
+
+To remove the JWT session cookie during logout, call `clearSessionCookie` on
+`LocksmithAuthService` with the response or reply object used by Express or
+Fastify:
+
+```typescript
+@Post('logout')
+logout(@Res() res: any) {
+  this.auth.clearSessionCookie(res);
+  return res.sendStatus(200);
 }
 ```
 
