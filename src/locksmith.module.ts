@@ -44,6 +44,10 @@ export interface LocksmithModuleOptions {
       passReqToCallback: boolean;
     };
   };
+  /** Optional path used by OAuth controllers for the final redirect */
+  redirectPath?: string;
+  /** Express cookie options used when setting the session cookie */
+  cookieOptions?: import('express').CookieOptions;
 }
 
 export class LocksmithModule {

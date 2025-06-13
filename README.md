@@ -41,6 +41,8 @@ LocksmithModule.forRoot({
     expiresIn: 3600,
     sessionCookieName: 'MyAppSession'
   },
+  redirectPath: '/profile',
+  cookieOptions: { httpOnly: true, sameSite: 'lax' },
   external: {
     google: {
       clientID: 'google-oauth-client-id',
@@ -63,6 +65,10 @@ LocksmithModule.forRoot({
   }
 }),
 ```
+
+`redirectPath` controls where users are redirected after a successful
+OAuth login, and `cookieOptions` are passed directly to Express when
+setting the session cookie.
 
 Each authentication mechanism is activated by providing it's respective configuration value in the `LocksmithModuleOptions` provided to the `LocksmithModule`. Omitting `jwt`, `external.apple`, `external.google`, or `external.microsoft`, or `external` entirely, will disable support for that functionality and the respective AuthGuards and Passport strategies will not be registered by the `LocksmithModule` with the NestJS dependency container.
 
