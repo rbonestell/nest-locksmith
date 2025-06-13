@@ -1,12 +1,18 @@
 import { Controller, Get, Inject, Req, Res, UseGuards } from '@nestjs/common';
 import { GoogleAuthGuard } from '../guards/google-auth.guard';
-import { LocksmithModuleOptions } from '../locksmith.module';
+import {
+  LOCKSMITH_AUTH_SERVICE,
+  LocksmithModuleOptions,
+} from '../locksmith.module';
+import { ILocksmithAuthService } from '../services/locksmith-auth.service';
 
 @Controller('auth/google')
 export class GoogleOauthController {
   constructor(
     @Inject('LOCKSMITH_OPTIONS')
     private readonly options: LocksmithModuleOptions,
+    @Inject(LOCKSMITH_AUTH_SERVICE)
+    private readonly authService: ILocksmithAuthService,
   ) {}
 
   @Get()
@@ -18,7 +24,7 @@ export class GoogleOauthController {
   @Get('redirect')
   @UseGuards(GoogleAuthGuard)
   async googleAuthRedirect(@Req() req, @Res() res) {
-    const { accessToken } = this.jwtAuthService.login(req.user);
+    const { accessToken } = await this.authService.createExternalAccessToken(req.user.id, 'Google');
     res.cookie(this.options?.jwt?.sessionCookieName, accessToken, {
       httpOnly: true,
       sameSite: 'lax',

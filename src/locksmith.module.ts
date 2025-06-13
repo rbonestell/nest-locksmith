@@ -8,6 +8,7 @@ import { MicrosoftAuthStrategy } from './strategies/microsoft-auth.strategy';
 import { JwtAuthStrategy } from './strategies/jwt.strategy';
 import { AppleAuthGuard } from './guards/apple-auth.guard';
 import { AppleAuthStrategy } from './strategies/apple-auth.strategy';
+import { LocksmithAuthService } from './services/locksmith-auth.service';
 
 export interface OAuthOptions {
   clientID: string;
@@ -22,6 +23,11 @@ export interface LocksmithModuleOptions {
     secret: string;
     expiresIn: number;
     sessionCookieName: string;
+    /**
+     * Optional issuer name used for the `iss` claim when creating JWTs.
+     * When omitted, the value is read from the host application's package.json name.
+     */
+    issuerName?: string;
   };
   external?: {
     google?: OAuthOptions;
@@ -41,6 +47,7 @@ export class LocksmithModule {
   static forRoot(options?: LocksmithModuleOptions): DynamicModule {
     const imports: Array<any> = [];
     const exports: Array<any> = [];
+    const providers: Array<any> = [];
 
     // Initialize JWT if options were provided
     if (options?.jwt) {
@@ -52,17 +59,24 @@ export class LocksmithModule {
           },
         }),
       );
-      exports.push(JwtAuthGuard, JwtAuthStrategy);
+      exports.push(JwtAuthGuard, JwtAuthStrategy, LOCKSMITH_AUTH_SERVICE);
+      providers.push(JwtAuthGuard, JwtAuthStrategy);
     }
 
-    if (options?.external?.apple)
+    if (options?.external?.apple) {
       exports.push(AppleAuthGuard, AppleAuthStrategy);
+      providers.push(AppleAuthGuard, AppleAuthStrategy);
+    }
 
-    if (options?.external?.google)
+    if (options?.external?.google) {
       exports.push(GoogleAuthGuard, GoogleAuthStrategy);
+      providers.push(GoogleAuthGuard, GoogleAuthStrategy);
+    }
 
-    if (options?.external?.microsoft)
+    if (options?.external?.microsoft) {
       exports.push(MicrosoftAuthGuard, MicrosoftAuthStrategy);
+      providers.push(MicrosoftAuthGuard, MicrosoftAuthStrategy);
+    }
 
     // Custom Locksmith Options Provider
     const optionsProvider: Provider = {
@@ -70,11 +84,17 @@ export class LocksmithModule {
       useValue: options,
     };
 
+    const authServiceProvider: Provider = {
+      provide: LOCKSMITH_AUTH_SERVICE,
+      useClass: LocksmithAuthService,
+    };
+    providers.push(authServiceProvider, optionsProvider, Logger);
+
     return {
       module: LocksmithModule,
       imports,
       exports,
-      providers: [optionsProvider, Logger],
+      providers,
     };
   }
 }

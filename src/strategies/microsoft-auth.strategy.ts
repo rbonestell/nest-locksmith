@@ -19,9 +19,9 @@ export class MicrosoftAuthStrategy extends PassportStrategy(
     private readonly options: LocksmithModuleOptions,
   ) {
     super({
-      ...options?.external?.microsoft,
+      ...(options?.external?.microsoft as any),
       scope: ['user.read'],
-    });
+    } as any);
   }
 
   validate(

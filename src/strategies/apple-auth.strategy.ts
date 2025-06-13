@@ -26,6 +26,9 @@ export class AppleAuthStrategy extends PassportStrategy(
     idToken: string,
     profile,
   ) {
+
+    // Validate JWT token with Apple JWK keys
+
     const decodedToken = this.jwtService.decode(idToken, { json: true });
 
     if (!decodedToken) return null;
