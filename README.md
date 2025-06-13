@@ -175,7 +175,11 @@ In order to support and configure each external auth provider, you will need to 
 
 ## Testing
 
+Install dependencies before running tests:
+
 ```bash
+$ npm install
+
 # unit tests
 $ npm run test
 
