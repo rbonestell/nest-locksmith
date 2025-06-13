@@ -117,6 +117,18 @@ export class AuthController {
 }
 ```
 
+Routes that require authentication can be protected using the `JwtAuthGuard`:
+
+```typescript
+@Controller('profile')
+@UseGuards(JwtAuthGuard)
+export class ProfileController {
+  @Get()
+  getProfile(@Req() req: Request) {
+    return req.user;
+  }
+}
+```
 ### Clearing the session cookie
 
 To remove the JWT session cookie during logout, call `clearSessionCookie` on
