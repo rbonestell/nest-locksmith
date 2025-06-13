@@ -18,6 +18,7 @@ export interface ILocksmithAuthService {
     externalId: string,
     authProvider: AuthProvider,
   ): Promise<AccessToken>;
+  clearSessionCookie(res: { clearCookie?: (name: string, options?: any) => any }): void;
 }
 
 @Injectable()
@@ -75,5 +76,12 @@ export class LocksmithAuthService implements ILocksmithAuthService {
     if (!tokenPayload.jti) tokenPayload.jti = uuid();
     const accessToken = await this.jwtService.signAsync(tokenPayload);
     return { accessToken };
+  }
+
+  clearSessionCookie(res: { clearCookie?: (name: string, options?: any) => any }): void {
+    const name = this.options?.jwt?.sessionCookieName;
+    if (name && typeof res.clearCookie === 'function') {
+      res.clearCookie(name);
+    }
   }
 }
