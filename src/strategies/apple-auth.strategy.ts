@@ -4,6 +4,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { LocksmithModuleOptions } from '../locksmith.module';
 import { JwtService } from '@nestjs/jwt';
 import * as jwksClient from 'jwks-rsa';
+import type { JwksClient } from 'jwks-rsa';
 import * as jwt from 'jsonwebtoken';
 import { AuthProvider } from '../enums';
 
@@ -20,7 +21,12 @@ export class AppleAuthStrategy extends PassportStrategy(
     super({
       ...options?.external?.apple,
     });
+    this.jwks = jwksClient({
+      jwksUri: 'https://appleid.apple.com/auth/keys',
+    });
   }
+
+  private readonly jwks: JwksClient;
 
   async validate(
     _accessToken: string,
@@ -29,9 +35,7 @@ export class AppleAuthStrategy extends PassportStrategy(
     profile,
   ) {
     // Validate JWT token with Apple JWK keys
-    const client = jwksClient({
-      jwksUri: 'https://appleid.apple.com/auth/keys',
-    });
+    const client = this.jwks;
 
     let payload: any;
 
