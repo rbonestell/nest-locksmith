@@ -23,12 +23,12 @@ export interface LocksmithModuleOptions {
     secret: string;
     expiresIn: number;
     sessionCookieName: string;
+    /**
+     * Optional issuer name used for the `iss` claim when creating JWTs.
+     * When omitted, the value is read from the host application's package.json name.
+     */
+    issuerName?: string;
   };
-  /**
-   * Optional issuer name used for the `iss` claim when creating JWTs.
-   * When omitted, the value is read from the host application's package.json name.
-   */
-  issuerName?: string;
   external?: {
     google?: OAuthOptions;
     microsoft?: OAuthOptions;

@@ -29,7 +29,7 @@ export class LocksmithAuthService implements ILocksmithAuthService {
   ) {}
 
   private resolveIssuer(): string | undefined {
-    if (this.options?.issuerName) return this.options.issuerName;
+    if (this.options?.jwt?.issuerName) return this.options.jwt.issuerName;
     try {
       const pkg = JSON.parse(
         readFileSync(join(process.cwd(), 'package.json'), 'utf8'),

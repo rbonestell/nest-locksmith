@@ -74,7 +74,7 @@ In order to properly expose the external authentication provider callback URLs, 
 
 ### 3. Generate a session token after verifying credentials
 
-Your application is responsible for verifying user credentials. Once verified, use `LocksmithAuthService` to generate a JWT and store it in the cookie named by `sessionCookieName`:
+Your application is responsible for verifying user credentials. Once verified, use `LocksmithAuthService` to generate a JWT and store it in the cookie named by the value of `sessionCookieName`:
 
 ```typescript
 @Controller('auth')
