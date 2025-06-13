@@ -1,5 +1,9 @@
 import { GoogleAuthStrategy } from './google-auth.strategy';
-import { MicrosoftAuthStrategy, MicrosoftProfile } from './microsoft-auth.strategy';
+import { Profile } from 'passport-google-oauth20';
+import {
+  MicrosoftAuthStrategy,
+  MicrosoftProfile,
+} from './microsoft-auth.strategy';
 import { AppleAuthStrategy } from './apple-auth.strategy';
 import { JwtService } from '@nestjs/jwt';
 import * as jwksClient from 'jwks-rsa';
@@ -8,18 +12,22 @@ import * as jwt from 'jsonwebtoken';
 jest.mock('jwks-rsa');
 
 describe('OAuth Strategies', () => {
-  it('GoogleAuthStrategy.validate returns payload', async () => {
+  it('GoogleAuthStrategy.validate returns payload', () => {
     const strategy = new GoogleAuthStrategy({
       external: {
-        google: { clientID: 'id', clientSecret: 'secret', callbackURL: 'http://localhost' },
+        google: {
+          clientID: 'id',
+          clientSecret: 'secret',
+          callbackURL: 'http://localhost',
+        },
       },
     });
-    const profile: any = {
+    const profile: Profile = {
       id: '123',
       name: { givenName: 'Bob' },
       emails: [{ value: 'bob@test.com', verified: true }],
-    };
-    const result = await strategy.validate('', '', profile);
+    } as Profile;
+    const result = strategy.validate('', '', profile);
     expect(result).toEqual({
       provider: 'google',
       providerId: '123',
@@ -28,10 +36,14 @@ describe('OAuth Strategies', () => {
     });
   });
 
-  it('MicrosoftAuthStrategy.validate returns payload', async () => {
+  it('MicrosoftAuthStrategy.validate returns payload', () => {
     const strategy = new MicrosoftAuthStrategy({
       external: {
-        microsoft: { clientID: 'id', clientSecret: 'secret', callbackURL: 'http://localhost' },
+        microsoft: {
+          clientID: 'id',
+          clientSecret: 'secret',
+          callbackURL: 'http://localhost',
+        },
       },
     });
     const profile: MicrosoftProfile = {
@@ -39,7 +51,7 @@ describe('OAuth Strategies', () => {
       displayName: 'Alice',
       userPrincipalName: 'alice@ms.com',
     } as MicrosoftProfile;
-    const result = await strategy.validate('', '', profile);
+    const result = strategy.validate('', '', profile);
     expect(result).toEqual({
       provider: 'microsoft',
       providerId: '456',
