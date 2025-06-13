@@ -2,7 +2,6 @@ import { Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Inject, Injectable } from '@nestjs/common';
 import { LocksmithModuleOptions } from '../locksmith.module';
-import { JwtService } from '@nestjs/jwt';
 
 export interface JwtPayload {
   /**

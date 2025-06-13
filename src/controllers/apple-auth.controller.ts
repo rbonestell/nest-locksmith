@@ -1,5 +1,5 @@
 import { Controller, Get, Inject, Req, Res, UseGuards } from '@nestjs/common';
-import { GoogleAuthGuard } from '../guards/google-auth.guard';
+import { AppleAuthGuard } from '../guards/apple-auth.guard';
 import {
   LOCKSMITH_AUTH_SERVICE,
   LocksmithModuleOptions,
@@ -7,8 +7,8 @@ import {
 import { ILocksmithAuthService } from '../services/locksmith-auth.service';
 import { AuthProvider } from '../enums';
 
-@Controller('auth/google')
-export class GoogleOauthController {
+@Controller('auth/apple')
+export class AppleOauthController {
   constructor(
     @Inject('LOCKSMITH_OPTIONS')
     private readonly options: LocksmithModuleOptions,
@@ -17,19 +17,19 @@ export class GoogleOauthController {
   ) {}
 
   @Get()
-  @UseGuards(GoogleAuthGuard)
-  async googleAuth() {
+  @UseGuards(AppleAuthGuard)
+  async appleAuth() {
     // Guard redirects
   }
 
   @Get('redirect')
-  @UseGuards(GoogleAuthGuard)
-  async googleAuthRedirect(@Req() req, @Res() res): Promise<any> {
+  @UseGuards(AppleAuthGuard)
+  async appleAuthRedirect(@Req() req, @Res() res): Promise<any> {
     /* eslint-disable @typescript-eslint/no-unsafe-argument */
     const { accessToken } = await this.authService.createExternalAccessToken(
       req.user,
       req.user?.providerId,
-      AuthProvider.Google,
+      AuthProvider.Apple,
     );
     /* eslint-enable @typescript-eslint/no-unsafe-argument */
     res.cookie(this.options?.jwt?.sessionCookieName, accessToken, {

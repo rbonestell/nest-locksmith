@@ -9,6 +9,9 @@ import { JwtAuthStrategy } from './strategies/jwt.strategy';
 import { AppleAuthGuard } from './guards/apple-auth.guard';
 import { AppleAuthStrategy } from './strategies/apple-auth.strategy';
 import { LocksmithAuthService } from './services/locksmith-auth.service';
+import { GoogleOauthController } from './controllers/google-auth.controller';
+import { MicrosoftOauthController } from './controllers/microsoft-auth.controller';
+import { AppleOauthController } from './controllers/apple-auth.controller';
 
 export interface OAuthOptions {
   clientID: string;
@@ -48,6 +51,7 @@ export class LocksmithModule {
     const imports: Array<any> = [];
     const exports: Array<any> = [];
     const providers: Array<any> = [];
+    const controllers: Array<any> = [];
 
     // Initialize JWT if options were provided
     if (options?.jwt) {
@@ -66,16 +70,19 @@ export class LocksmithModule {
     if (options?.external?.apple) {
       exports.push(AppleAuthGuard, AppleAuthStrategy);
       providers.push(AppleAuthGuard, AppleAuthStrategy);
+      controllers.push(AppleOauthController);
     }
 
     if (options?.external?.google) {
       exports.push(GoogleAuthGuard, GoogleAuthStrategy);
       providers.push(GoogleAuthGuard, GoogleAuthStrategy);
+      controllers.push(GoogleOauthController);
     }
 
     if (options?.external?.microsoft) {
       exports.push(MicrosoftAuthGuard, MicrosoftAuthStrategy);
       providers.push(MicrosoftAuthGuard, MicrosoftAuthStrategy);
+      controllers.push(MicrosoftOauthController);
     }
 
     // Custom Locksmith Options Provider
@@ -93,6 +100,7 @@ export class LocksmithModule {
     return {
       module: LocksmithModule,
       imports,
+      controllers,
       exports,
       providers,
     };
