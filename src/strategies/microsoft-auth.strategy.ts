@@ -32,7 +32,7 @@ export class MicrosoftAuthStrategy extends PassportStrategy(
     profile: MicrosoftProfile,
   ) {
     return {
-      provider: 'microsoft',
+      provider: AuthProvider.Microsoft,
       providerId: profile?.id,
       name: profile?.displayName,
       username: profile?.userPrincipalName,

@@ -65,7 +65,7 @@ export class AppleAuthStrategy extends PassportStrategy(
 
     // JWT token should contain email if authenticated
     return {
-      provider: 'apple',
+      provider: AuthProvider.Apple,
       providerId: profile?.id,
       username: email,
     };

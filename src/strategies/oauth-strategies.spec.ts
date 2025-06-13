@@ -8,6 +8,7 @@ import { AppleAuthStrategy } from './apple-auth.strategy';
 import { JwtService } from '@nestjs/jwt';
 import * as jwksClient from 'jwks-rsa';
 import * as jwt from 'jsonwebtoken';
+import { AuthProvider } from '../enums';
 
 jest.mock('jwks-rsa');
 
@@ -29,7 +30,7 @@ describe('OAuth Strategies', () => {
     } as Profile;
     const result = strategy.validate('', '', profile);
     expect(result).toEqual({
-      provider: 'google',
+      provider: AuthProvider.Google,
       providerId: '123',
       name: 'Bob',
       username: 'bob@test.com',
@@ -53,7 +54,7 @@ describe('OAuth Strategies', () => {
     } as MicrosoftProfile;
     const result = strategy.validate('', '', profile);
     expect(result).toEqual({
-      provider: 'microsoft',
+      provider: AuthProvider.Microsoft,
       providerId: '456',
       name: 'Alice',
       username: 'alice@ms.com',
@@ -100,7 +101,7 @@ describe('OAuth Strategies', () => {
       audience: 'id',
     });
     expect(result).toEqual({
-      provider: 'apple',
+      provider: AuthProvider.Apple,
       providerId: '789',
       username: 'app@test.com',
     });

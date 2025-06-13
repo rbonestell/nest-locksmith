@@ -40,7 +40,7 @@ describe('OAuth Controllers', () => {
       AuthProvider.Google,
     );
 
-    expect(res.cookie).toHaveBeenCalledWith('sid', 'token', { secure: true });
+    expect(res.cookie).toHaveBeenCalledWith('sid', 'token', { secure: true, httpOnly: true, sameSite: 'lax' });
     expect(res.redirect).toHaveBeenCalledWith('/home');
   });
 
@@ -58,7 +58,7 @@ describe('OAuth Controllers', () => {
       'mid',
       AuthProvider.Microsoft,
     );
-    expect(res.cookie).toHaveBeenCalledWith('sid', 'token', { secure: true });
+    expect(res.cookie).toHaveBeenCalledWith('sid', 'token', { secure: true, httpOnly: true, sameSite: 'lax' });
     expect(res.redirect).toHaveBeenCalledWith('/home');
   });
 
@@ -76,7 +76,7 @@ describe('OAuth Controllers', () => {
       'aid',
       AuthProvider.Apple,
     );
-    expect(res.cookie).toHaveBeenCalledWith('sid', 'token', { secure: true });
+    expect(res.cookie).toHaveBeenCalledWith('sid', 'token', { secure: true, httpOnly: true, sameSite: 'lax' });
     expect(res.redirect).toHaveBeenCalledWith('/home');
   });
 });

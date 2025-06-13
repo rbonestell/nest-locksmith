@@ -31,9 +31,13 @@ export class AppleOauthController {
       req.user?.providerId,
       AuthProvider.Apple,
     );
-    /* eslint-enable @typescript-eslint/no-unsafe-argument */
-    const cookieOpts =
-      this.options?.cookieOptions ?? ({ httpOnly: true, sameSite: 'lax' } as any);
+
+    const cookieOpts = {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      ...this.options?.cookieOptions,
+    };
     res.cookie(this.options?.jwt?.sessionCookieName, accessToken, cookieOpts);
     const redirect = this.options?.redirectPath ?? '/profile';
     return res.redirect(redirect);

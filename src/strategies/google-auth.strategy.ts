@@ -26,7 +26,7 @@ export class GoogleAuthStrategy extends PassportStrategy(
     const emailValidated = profile?.emails?.[0]?.verified ?? false;
     if (!emailValidated) return null;
     return {
-      provider: 'google',
+      provider: AuthProvider.Google,
       providerId: profile?.id,
       name: profile?.name?.givenName,
       username: profile?.emails?.[0]?.value,

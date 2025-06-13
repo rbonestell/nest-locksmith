@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { LocksmithAuthService } from './services/locksmith-auth.service';
-import { JwtPayload } from './strategies/jwt.strategy';
+import { LocksmithAuthService } from './locksmith-auth.service';
+import { JwtPayload } from '../strategies/jwt.strategy';
 
 describe('LocksmithAuthService', () => {
   it('creates tokens with default iss and jti', async () => {
