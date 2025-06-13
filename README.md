@@ -57,7 +57,7 @@ LocksmithModule.forRoot({
     apple: {
       clientID: 'apple-auth-client-id',
       teamID: 'apple-auth-team-id',
-      callbackURL: 'https://www.example.com/auth/callback/apple'
+      callbackURL: 'https://www.example.com/auth/callback/apple',
       keyID: 'apple-auth-key-id',
       privateKeyString: 'apple-auth-private-key-bytes-string',
       passReqToCallback: true
