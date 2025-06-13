@@ -98,6 +98,19 @@ export class AuthController {
 }
 ```
 
+Routes that require authentication can be protected using the `JwtAuthGuard`:
+
+```typescript
+@Controller('profile')
+@UseGuards(JwtAuthGuard)
+export class ProfileController {
+  @Get()
+  getProfile(@Req() req: Request) {
+    return req.user;
+  }
+}
+```
+
 ## External Auth Providers
 
 In order to support and configure each external auth provider, you will need to register your application with each and obtain the proper OAuth credentials which to provide in the `LocksmithModuleOptions`.
