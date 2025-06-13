@@ -67,8 +67,8 @@ LocksmithModule.forRoot({
 ```
 
 Optionally, `redirectPath` controls where users are redirected after a successful
-OAuth login, and `cookieOptions` are passed directly to Express when
-setting and clearing the session cookie.
+OAuth login. `cookieOptions` are forwarded to the Express `response.cookie`
+method or Fastify's `reply.cookie` when setting and clearing the session cookie.
 
 Alternatively, you can load configuration asynchronously using Nest's
 `ConfigModule`:

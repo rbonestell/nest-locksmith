@@ -54,7 +54,10 @@ export interface LocksmithModuleOptions {
   };
   /** Optional path used by OAuth controllers for the final redirect */
   redirectPath?: string;
-  /** Express cookie options used when setting the session cookie */
+  /**
+   * Cookie options used when setting or clearing the session cookie.
+   * Compatible with Express and Fastify (@fastify/cookie).
+   */
   cookieOptions?: import('express').CookieOptions;
 }
 
