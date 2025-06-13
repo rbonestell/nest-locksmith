@@ -2,6 +2,10 @@ import { GoogleAuthStrategy } from './google-auth.strategy';
 import { MicrosoftAuthStrategy, MicrosoftProfile } from './microsoft-auth.strategy';
 import { AppleAuthStrategy } from './apple-auth.strategy';
 import { JwtService } from '@nestjs/jwt';
+import * as jwksClient from 'jwks-rsa';
+import * as jwt from 'jsonwebtoken';
+
+jest.mock('jwks-rsa');
 
 describe('OAuth Strategies', () => {
   it('GoogleAuthStrategy.validate returns payload', async () => {
@@ -45,8 +49,19 @@ describe('OAuth Strategies', () => {
   });
 
   it('AppleAuthStrategy.validate returns payload', async () => {
+    const mockGetSigningKey = jest.fn().mockResolvedValue({
+      getPublicKey: () => 'public',
+    });
+    (jwksClient as unknown as jest.Mock).mockReturnValue({
+      getSigningKey: mockGetSigningKey,
+    });
+    jest.spyOn(jwt, 'decode').mockReturnValue({ header: { kid: 'kid' } } as any);
+
     const jwtService = {
-      decode: jest.fn().mockReturnValue({ email: 'app@test.com', email_verified: true }),
+      verifyAsync: jest.fn().mockResolvedValue({
+        email: 'app@test.com',
+        email_verified: true,
+      }),
     } as unknown as JwtService;
     const strategy = new AppleAuthStrategy(
       {
@@ -65,7 +80,13 @@ describe('OAuth Strategies', () => {
     );
     const profile: any = { id: '789' };
     const result = await strategy.validate('', '', 'idToken', profile);
-    expect(jwtService.decode).toHaveBeenCalledWith('idToken', { json: true });
+    expect(mockGetSigningKey).toHaveBeenCalledWith('kid');
+    expect(jwtService.verifyAsync).toHaveBeenCalledWith('idToken', {
+      publicKey: 'public',
+      algorithms: ['RS256'],
+      issuer: 'https://appleid.apple.com',
+      audience: 'id',
+    });
     expect(result).toEqual({
       provider: 'apple',
       providerId: '789',
