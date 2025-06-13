@@ -1,1 +1,5 @@
-describe("dummy", () => { it("passes", () => { expect(true).toBe(true); }); });
+describe('dummy', () => {
+  it('passes', () => {
+    expect(true).toBe(true);
+  });
+});
