@@ -26,8 +26,13 @@ export class GoogleOauthController {
   @UseGuards(GoogleAuthGuard)
   async googleAuthRedirect(@Req() req, @Res() res): Promise<any> {
     /* eslint-disable @typescript-eslint/no-unsafe-argument */
+    const payload = {
+      sub: req.user?.username,
+      username: req.user?.username,
+      name: req.user?.name,
+    };
     const { accessToken } = await this.authService.createExternalAccessToken(
-      req.user,
+      payload,
       req.user?.providerId,
       AuthProvider.Google,
     );
