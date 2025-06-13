@@ -43,4 +43,28 @@ describe('LocksmithAuthService', () => {
     service.clearSessionCookie(res);
     expect(res.clearCookie).toHaveBeenCalledWith('MyCookie');
   });
+
+  it('passes cookie options when clearing the session cookie', async () => {
+    const moduleRef = await Test.createTestingModule({
+      imports: [JwtModule.register({ secret: 'test' })],
+      providers: [
+        LocksmithAuthService,
+        {
+          provide: 'LOCKSMITH_OPTIONS',
+          useValue: {
+            jwt: { sessionCookieName: 'MyCookie' },
+            cookieOptions: { path: '/app', domain: 'example.com' } as any,
+          },
+        },
+      ],
+    }).compile();
+
+    const service = moduleRef.get<LocksmithAuthService>(LocksmithAuthService);
+    const res = { clearCookie: jest.fn() } as any;
+    service.clearSessionCookie(res);
+    expect(res.clearCookie).toHaveBeenCalledWith('MyCookie', {
+      path: '/app',
+      domain: 'example.com',
+    });
+  });
 });
