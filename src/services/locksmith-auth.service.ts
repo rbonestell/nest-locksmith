@@ -28,13 +28,20 @@ export class LocksmithAuthService implements ILocksmithAuthService {
     private readonly options: LocksmithModuleOptions,
   ) {}
 
+  private _cachedIssuer?: string; // Cache for the issuer value
+
   private resolveIssuer(): string | undefined {
-    if (this.options?.jwt?.issuerName) return this.options.jwt.issuerName;
+    if (this._cachedIssuer) return this._cachedIssuer; // Return cached value if available
+    if (this.options?.jwt?.issuerName) {
+      this._cachedIssuer = this.options.jwt.issuerName;
+      return this._cachedIssuer;
+    }
     try {
       const pkg = JSON.parse(
         readFileSync(join(process.cwd(), 'package.json'), 'utf8'),
       );
-      return pkg.name as string;
+      this._cachedIssuer = pkg.name as string;
+      return this._cachedIssuer;
     } catch {
       return undefined;
     }
