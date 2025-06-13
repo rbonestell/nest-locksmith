@@ -24,7 +24,7 @@ export class GoogleOauthController {
   @Get('redirect')
   @UseGuards(GoogleAuthGuard)
   async googleAuthRedirect(@Req() req, @Res() res) {
-    const { accessToken } = await this.authService.createAccessToken(req.user);
+    const { accessToken } = await this.authService.createExternalAccessToken(req.user.id, 'Google');
     res.cookie(this.options?.jwt?.sessionCookieName, accessToken, {
       httpOnly: true,
       sameSite: 'lax',
