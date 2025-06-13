@@ -66,11 +66,9 @@ LocksmithModule.forRoot({
 
 Each authentication mechanism is activated by providing it's respective configuration value in the `LocksmithModuleOptions` provided to the `LocksmithModule`. Omitting `jwt`, `external.apple`, `external.google`, or `external.microsoft`, or `external` entirely, will disable support for that functionality and the respective AuthGuards and Passport strategies will not be registered by the `LocksmithModule` with the NestJS dependency container.
 
-### 2. Add the respective external auth provider controllers to your API
+### 2. Use the built-in OAuth controllers
 
-In order to properly expose the external authentication provider callback URLs, you must add the proper controllers to your API module.
-
-> **_// TODO: Determine if nest-locksmith should provide out-of-the-box controllers for each provider or developer should implement custom @Locksmith controller attribute?_**
+When you supply configuration for Apple, Google, or Microsoft, `LocksmithModule` registers route controllers automatically. Each provider exposes `/auth/<provider>` and `/auth/<provider>/redirect` endpoints, so no additional controller code is required.
 
 ### 3. Generate a session token after verifying credentials
 
@@ -106,15 +104,23 @@ In order to support and configure each external auth provider, you will need to 
 
 ### Apple
 
-Lorem ipsum
+1. Sign in to the [Apple Developer](https://developer.apple.com/account/) portal and create a Service ID with **Sign in with Apple** enabled.
+2. Add your web domain and the redirect URL (for example `https://example.com/auth/apple/redirect`).
+3. Generate a private key for Sign in with Apple and note the **Key ID** and **Team ID**.
+4. Provide these values as `clientID`, `teamID`, `callbackURL`, `keyID`, and `privateKeyString` in `LocksmithModuleOptions` and enable `passReqToCallback` if desired.
 
 ### Google
 
-Lorem ipsum
+1. Open the [Google Cloud Console](https://console.cloud.google.com/apis/credentials) and create an **OAuth 2.0 Client ID**.
+2. Configure an authorized redirect URI matching your `callbackURL` (e.g., `https://example.com/auth/google/redirect`).
+3. Supply the generated `clientID`, `clientSecret`, and `callbackURL` under `external.google` in `LocksmithModuleOptions`.
 
 ### Microsoft
 
-Lorem Ipsum
+1. In the [Azure Portal](https://portal.azure.com/) register a new application.
+2. Add a **Web** redirect URI that matches your `callbackURL` such as `https://example.com/auth/microsoft/redirect`.
+3. Create a client secret and record the **Application (client) ID**.
+4. Set `clientID`, `clientSecret`, and `callbackURL` in `external.microsoft` to enable Microsoft OAuth.
 
 ## Testing
 
