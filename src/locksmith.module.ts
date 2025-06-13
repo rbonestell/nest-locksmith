@@ -1,4 +1,12 @@
-import { DynamicModule, Logger, Provider } from '@nestjs/common';
+import {
+  DynamicModule,
+  Logger,
+  Provider,
+  Module,
+  ModuleMetadata,
+  Type,
+} from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtAuthGuard } from './guards/jwt.guard';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
@@ -48,6 +56,22 @@ export interface LocksmithModuleOptions {
   redirectPath?: string;
   /** Express cookie options used when setting the session cookie */
   cookieOptions?: import('express').CookieOptions;
+}
+
+export interface LocksmithOptionsFactory {
+  createLocksmithOptions():
+    | Promise<LocksmithModuleOptions>
+    | LocksmithModuleOptions;
+}
+
+export interface LocksmithModuleAsyncOptions
+  extends Pick<ModuleMetadata, 'imports'> {
+  useExisting?: Type<LocksmithOptionsFactory>;
+  useClass?: Type<LocksmithOptionsFactory>;
+  useFactory?: (
+    ...args: any[]
+  ) => Promise<LocksmithModuleOptions> | LocksmithModuleOptions;
+  inject?: any[];
 }
 
 export class LocksmithModule {
@@ -108,5 +132,50 @@ export class LocksmithModule {
       exports,
       providers,
     };
+  }
+
+  private static async createOptionsFromAsync(
+    asyncOptions: LocksmithModuleAsyncOptions,
+  ): Promise<LocksmithModuleOptions | undefined> {
+    @Module({
+      imports: asyncOptions.imports ?? [],
+      providers: asyncOptions.useClass
+        ? [{ provide: asyncOptions.useClass, useClass: asyncOptions.useClass }]
+        : [],
+    })
+    class TempModule {}
+
+    const app = await NestFactory.createApplicationContext(TempModule, {
+      logger: false,
+    });
+    try {
+      if (asyncOptions.useFactory) {
+        const deps: unknown[] = await Promise.all(
+          (asyncOptions.inject ?? []).map((dep) =>
+            app.get<unknown>(
+              dep as
+                | string
+                | symbol
+                | (new (...args: any[]) => unknown)
+                | Type<unknown>,
+            ),
+          ),
+        );
+        return await asyncOptions.useFactory(...deps);
+      }
+      const optionsFactory = app.get<LocksmithOptionsFactory>(
+        asyncOptions.useExisting ?? asyncOptions.useClass!,
+      );
+      return await optionsFactory.createLocksmithOptions();
+    } finally {
+      await app.close();
+    }
+  }
+
+  static async forRootAsync(
+    options: LocksmithModuleAsyncOptions,
+  ): Promise<DynamicModule> {
+    const resolvedOptions = await this.createOptionsFromAsync(options);
+    return this.forRoot(resolvedOptions);
   }
 }
