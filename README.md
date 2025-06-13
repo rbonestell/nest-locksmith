@@ -16,6 +16,7 @@
 A lightweight library for adding Passport authentication functionality to your NestJS API. Adds support for JWT validation and authentication, and OAuth authentication with Apple, Google, and Microsoft!
 
 This library abstracts Passport and respective Passport authentication strategy libraries, simplifying their implementation into one simple NestJS module:
+
 - [passport-jwt](https://www.passportjs.org/packages/passport-jwt/)
 - [passport-apple](https://www.passportjs.org/packages/passport-apple/)
 - [passport-google-oauth20](https://www.passportjs.org/packages/passport-google-oauth20/)
@@ -69,9 +70,35 @@ Each authentication mechanism is activated by providing it's respective configur
 
 In order to properly expose the external authentication provider callback URLs, you must add the proper controllers to your API module.
 
-> ***// TODO: Determine if nest-locksmith should provide out-of-the-box controllers for each provider or developer should implement custom @Locksmith controller attribute?***
+> **_// TODO: Determine if nest-locksmith should provide out-of-the-box controllers for each provider or developer should implement custom @Locksmith controller attribute?_**
 
-Lorem ipsum dolor sit amet consectetur adipiscing elit. Dolor sit amet consectetur adipiscing elit quisque faucibus.
+### 3. Generate a session token after verifying credentials
+
+Your application is responsible for verifying user credentials. Once verified, use `LocksmithAuthService` to generate a JWT and store it in the cookie named by `sessionCookieName`:
+
+```typescript
+@Controller('auth')
+export class AuthController {
+  constructor(
+    @Inject(LOCKSMITH_AUTH_SERVICE)
+    private readonly auth: LocksmithAuthService,
+  ) {}
+
+  @Post('login')
+  async login(@Body() user: any, @Res() res: Response) {
+    // perform your own credential checks here
+    const { accessToken } = await this.auth.createAccessToken({
+      sub: user.id,
+      username: user.username,
+    });
+    res.cookie('MyAppSession', accessToken, {
+      httpOnly: true,
+      sameSite: 'lax',
+    });
+    return res.sendStatus(200);
+  }
+}
+```
 
 ## External Auth Providers
 

@@ -78,11 +78,8 @@
     "coverageDirectory": "./coverage",
     "testEnvironment": "node",
     "roots": [
-      "<rootDir>/src/",
-      "<rootDir>/libs/"
-    ],
-    "moduleNameMapper": {
-      "^@app/locksmith(|/.*)$": "<rootDir>/libs/locksmith/src/$1"
-    }
+      "<rootDir>/src",
+      "<rootDir>/test"
+    ]
   }
 }

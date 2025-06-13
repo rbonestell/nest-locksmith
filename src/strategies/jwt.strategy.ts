@@ -4,7 +4,14 @@ import { Inject, Injectable } from '@nestjs/common';
 import { LocksmithModuleOptions } from '../locksmith.module';
 import { JwtService } from '@nestjs/jwt';
 
-export type JwtPayload = { sub: number; username: string };
+export interface JwtPayload {
+  sub: number;
+  username: string;
+  iss?: string;
+  aud?: string;
+  jti?: string;
+  [claim: string]: string | number | undefined;
+}
 
 @Injectable()
 export class JwtAuthStrategy extends PassportStrategy(Strategy) {
@@ -17,7 +24,7 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy) {
       let token: string = '';
 
       if (req && req.cookies) {
-        token = req.cookies[options.jwt.sessionCookieName] as string;
+        token = req.cookies[options.jwt!.sessionCookieName] as string;
       }
       return token;
     };
@@ -25,7 +32,7 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: extractJwtFromCookie,
       ignoreExpiration: false,
-      secretOrKey: options.jwt.secret,
+      secretOrKey: options.jwt!.secret,
     });
   }
 

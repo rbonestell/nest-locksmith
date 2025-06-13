@@ -14,9 +14,9 @@ export class GoogleAuthStrategy extends PassportStrategy(
     private readonly options: LocksmithModuleOptions,
   ) {
     super({
-      ...options?.external?.google,
+      ...(options?.external?.google as any),
       scope: ['email', 'profile'],
-    });
+    } as any);
   }
 
   validate(_accessToken: string, _refreshToken: string, profile: Profile) {
