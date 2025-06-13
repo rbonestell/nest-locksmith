@@ -64,6 +64,25 @@ LocksmithModule.forRoot({
 }),
 ```
 
+Alternatively, you can load configuration asynchronously using Nest's
+`ConfigModule`:
+
+```typescript
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
+LocksmithModule.forRootAsync({
+  imports: [ConfigModule.forRoot()],
+  useFactory: (config: ConfigService) => ({
+    jwt: {
+      secret: config.get<string>('JWT_SECRET'),
+      expiresIn: config.get<number>('JWT_EXPIRES_IN'),
+      sessionCookieName: 'MyAppSession',
+    },
+  }),
+  inject: [ConfigService],
+}),
+```
+
 Each authentication mechanism is activated by providing it's respective configuration value in the `LocksmithModuleOptions` provided to the `LocksmithModule`. Omitting `jwt`, `external.apple`, `external.google`, or `external.microsoft`, or `external` entirely, will disable support for that functionality and the respective AuthGuards and Passport strategies will not be registered by the `LocksmithModule` with the NestJS dependency container.
 
 ### 2. Use the built-in OAuth controllers
@@ -83,7 +102,7 @@ export class AuthController {
   ) {}
 
   @Post('login')
-  async login(@Body() user: any, @Res() res: Response) {
+  async login(@Body() user: any, @Res() res: any) {
     // perform your own credential checks here
     const { accessToken } = await this.auth.createAccessToken({
       sub: user.id,
@@ -108,6 +127,19 @@ export class ProfileController {
   getProfile(@Req() req: Request) {
     return req.user;
   }
+}
+```
+### Clearing the session cookie
+
+To remove the JWT session cookie during logout, call `clearSessionCookie` on
+`LocksmithAuthService` with the response or reply object used by Express or
+Fastify:
+
+```typescript
+@Post('logout')
+logout(@Res() res: any) {
+  this.auth.clearSessionCookie(res);
+  return res.sendStatus(200);
 }
 ```
 
