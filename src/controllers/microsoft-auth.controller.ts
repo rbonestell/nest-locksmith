@@ -32,10 +32,10 @@ export class MicrosoftOauthController {
       AuthProvider.Microsoft,
     );
     /* eslint-enable @typescript-eslint/no-unsafe-argument */
-    res.cookie(this.options?.jwt?.sessionCookieName, accessToken, {
-      httpOnly: true,
-      sameSite: 'lax',
-    });
-    return res.redirect('/profile');
+    const cookieOpts =
+      this.options?.cookieOptions ?? ({ httpOnly: true, sameSite: 'lax' } as any);
+    res.cookie(this.options?.jwt?.sessionCookieName, accessToken, cookieOpts);
+    const redirect = this.options?.redirectPath ?? '/profile';
+    return res.redirect(redirect);
   }
 }

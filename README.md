@@ -36,6 +36,8 @@ Add the `LocksmithModule` to your NestJS application's appropriate module's `imp
 
 ```typescript
 LocksmithModule.forRoot({
+  redirectPath: '/profile',
+  cookieOptions: { httpOnly: true, sameSite: 'lax' },
   jwt: {
     secret: 'hunter2',
     expiresIn: 3600,
@@ -63,6 +65,10 @@ LocksmithModule.forRoot({
   }
 }),
 ```
+
+Optionally, `redirectPath` controls where users are redirected after a successful
+OAuth login, and `cookieOptions` are passed directly to Express when
+setting the session cookie.
 
 Alternatively, you can load configuration asynchronously using Nest's
 `ConfigModule`:

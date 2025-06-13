@@ -6,9 +6,12 @@ import { LocksmithModuleOptions } from '../locksmith.module';
 import { ILocksmithAuthService } from '../services/locksmith-auth.service';
 
 describe('OAuth Controllers', () => {
-  const options: LocksmithModuleOptions = {
-    jwt: { sessionCookieName: 'sid', expiresIn: 0, secret: 'test' },
-  };
+  const options = {
+    jwt: { sessionCookieName: 'sid' },
+    cookieOptions: { secure: true } as any,
+    redirectPath: '/home',
+  } as any;
+
 
   let authService: { createExternalAccessToken: jest.Mock };
   let res: { cookie: jest.Mock; redirect: jest.Mock };
@@ -36,11 +39,9 @@ describe('OAuth Controllers', () => {
       'gid',
       AuthProvider.Google,
     );
-    expect(res.cookie).toHaveBeenCalledWith('sid', 'token', {
-      httpOnly: true,
-      sameSite: 'lax',
-    });
-    expect(res.redirect).toHaveBeenCalledWith('/profile');
+
+    expect(res.cookie).toHaveBeenCalledWith('sid', 'token', { secure: true });
+    expect(res.redirect).toHaveBeenCalledWith('/home');
   });
 
   it('microsoftAuthRedirect creates token and sets cookie', async () => {
@@ -57,10 +58,8 @@ describe('OAuth Controllers', () => {
       'mid',
       AuthProvider.Microsoft,
     );
-    expect(res.cookie).toHaveBeenCalledWith('sid', 'token', {
-      httpOnly: true,
-      sameSite: 'lax',
-    });
+    expect(res.cookie).toHaveBeenCalledWith('sid', 'token', { secure: true });
+    expect(res.redirect).toHaveBeenCalledWith('/home');
   });
 
   it('appleAuthRedirect creates token and sets cookie', async () => {
@@ -77,9 +76,7 @@ describe('OAuth Controllers', () => {
       'aid',
       AuthProvider.Apple,
     );
-    expect(res.cookie).toHaveBeenCalledWith('sid', 'token', {
-      httpOnly: true,
-      sameSite: 'lax',
-    });
+    expect(res.cookie).toHaveBeenCalledWith('sid', 'token', { secure: true });
+    expect(res.redirect).toHaveBeenCalledWith('/home');
   });
 });
