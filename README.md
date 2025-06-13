@@ -64,6 +64,25 @@ LocksmithModule.forRoot({
 }),
 ```
 
+Alternatively, you can load configuration asynchronously using Nest's
+`ConfigModule`:
+
+```typescript
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
+LocksmithModule.forRootAsync({
+  imports: [ConfigModule.forRoot()],
+  useFactory: (config: ConfigService) => ({
+    jwt: {
+      secret: config.get<string>('JWT_SECRET'),
+      expiresIn: config.get<number>('JWT_EXPIRES_IN'),
+      sessionCookieName: 'MyAppSession',
+    },
+  }),
+  inject: [ConfigService],
+}),
+```
+
 Each authentication mechanism is activated by providing it's respective configuration value in the `LocksmithModuleOptions` provided to the `LocksmithModule`. Omitting `jwt`, `external.apple`, `external.google`, or `external.microsoft`, or `external` entirely, will disable support for that functionality and the respective AuthGuards and Passport strategies will not be registered by the `LocksmithModule` with the NestJS dependency container.
 
 ### 2. Use the built-in OAuth controllers
