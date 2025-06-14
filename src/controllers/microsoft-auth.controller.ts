@@ -25,12 +25,18 @@ export class MicrosoftOauthController {
   @Get('redirect')
   @UseGuards(MicrosoftAuthGuard)
   async microsoftAuthRedirect(@Req() req, @Res() res): Promise<any> {
-  	/* eslint-disable @typescript-eslint/no-unsafe-argument */
-  	const accessToken = await this.authService.createExternalAccessToken(
-  		req.user,
-  		req.user?.providerId,
-  		AuthProvider.Microsoft,
-  	);
+        /* eslint-disable @typescript-eslint/no-unsafe-argument */
+        const payload = {
+                sub: req.user?.username,
+                username: req.user?.username,
+                name: req.user?.name,
+        };
+
+        const accessToken = await this.authService.createExternalAccessToken(
+                payload,
+                req.user?.providerId,
+                AuthProvider.Microsoft,
+        );
 
   	const cookieOpts = {
   		httpOnly: true,

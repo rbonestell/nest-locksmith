@@ -46,20 +46,20 @@ describe('OAuth Controllers', () => {
 		expect(res.redirect).toHaveBeenCalledWith('/home');
 	});
 
-	it('microsoftAuthRedirect creates token and sets cookie', async () => {
-		const controller = new MicrosoftOauthController(
-			options,
+        it('microsoftAuthRedirect creates token and sets cookie', async () => {
+                const controller = new MicrosoftOauthController(
+                        options,
       authService as unknown as ILocksmithAuthService,
-		);
-		const req: any = {
-			user: { providerId: 'mid', username: 'alice@ms.com', name: 'Alice' },
-		};
-		await controller.microsoftAuthRedirect(req, res as any);
-		expect(authService.createExternalAccessToken).toHaveBeenCalledWith(
-			req.user,
-			'mid',
-			AuthProvider.Microsoft,
-		);
+                );
+                const req: any = {
+                        user: { providerId: 'mid', username: 'alice@ms.com', name: 'Alice' },
+                };
+                await controller.microsoftAuthRedirect(req, res as any);
+                expect(authService.createExternalAccessToken).toHaveBeenCalledWith(
+                        { sub: 'alice@ms.com', username: 'alice@ms.com', name: 'Alice' },
+                        'mid',
+                        AuthProvider.Microsoft,
+                );
 		expect(res.cookie).toHaveBeenCalledWith('sid', 'token', {
 			secure: true,
 			httpOnly: true,
@@ -68,20 +68,20 @@ describe('OAuth Controllers', () => {
 		expect(res.redirect).toHaveBeenCalledWith('/home');
 	});
 
-	it('appleAuthRedirect creates token and sets cookie', async () => {
-		const controller = new AppleOauthController(
-			options,
+        it('appleAuthRedirect creates token and sets cookie', async () => {
+                const controller = new AppleOauthController(
+                        options,
       authService as unknown as ILocksmithAuthService,
-		);
-		const req: any = {
-			user: { providerId: 'aid', username: 'apple@test.com' },
-		};
-		await controller.appleAuthRedirect(req, res as any);
-		expect(authService.createExternalAccessToken).toHaveBeenCalledWith(
-			req.user,
-			'aid',
-			AuthProvider.Apple,
-		);
+                );
+                const req: any = {
+                        user: { providerId: 'aid', username: 'apple@test.com' },
+                };
+                await controller.appleAuthRedirect(req, res as any);
+                expect(authService.createExternalAccessToken).toHaveBeenCalledWith(
+                        { sub: 'apple@test.com', username: 'apple@test.com', name: undefined },
+                        'aid',
+                        AuthProvider.Apple,
+                );
 		expect(res.cookie).toHaveBeenCalledWith('sid', 'token', {
 			secure: true,
 			httpOnly: true,

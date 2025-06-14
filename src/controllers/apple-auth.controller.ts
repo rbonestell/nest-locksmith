@@ -25,12 +25,18 @@ export class AppleOauthController {
   @Get('redirect')
   @UseGuards(AppleAuthGuard)
   async appleAuthRedirect(@Req() req, @Res() res): Promise<any> {
-  	/* eslint-disable @typescript-eslint/no-unsafe-argument */
-  	const accessToken = await this.authService.createExternalAccessToken(
-  		req.user,
-  		req.user?.providerId,
-  		AuthProvider.Apple,
-  	);
+        /* eslint-disable @typescript-eslint/no-unsafe-argument */
+        const payload = {
+                sub: req.user?.username,
+                username: req.user?.username,
+                name: req.user?.name,
+        };
+
+        const accessToken = await this.authService.createExternalAccessToken(
+                payload,
+                req.user?.providerId,
+                AuthProvider.Apple,
+        );
 
   	const cookieOpts = {
   		httpOnly: true,
