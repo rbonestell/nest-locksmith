@@ -1,26 +1,26 @@
 import {
 	DynamicModule,
 	Logger,
-	Provider,
 	Module,
 	ModuleMetadata,
+	Provider,
 	Type,
 } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtAuthGuard } from './guards/jwt.guard';
-import { GoogleAuthGuard } from './guards/google-auth.guard';
-import { MicrosoftAuthGuard } from './guards/microsoft-auth.guard';
-import { GoogleAuthStrategy } from './strategies/google-auth.strategy';
-import { MicrosoftAuthStrategy } from './strategies/microsoft-auth.strategy';
-import { JwtAuthStrategy } from './strategies/jwt.strategy';
-import { AppleAuthGuard } from './guards/apple-auth.guard';
-import { AppleAuthStrategy } from './strategies/apple-auth.strategy';
-import { LocksmithAuthService } from './services/locksmith-auth.service';
+import { CookieOptions } from 'express';
+import { AppleOauthController } from './controllers/apple-auth.controller';
 import { GoogleOauthController } from './controllers/google-auth.controller';
 import { MicrosoftOauthController } from './controllers/microsoft-auth.controller';
-import { AppleOauthController } from './controllers/apple-auth.controller';
-import { CookieOptions } from 'express';
+import { AppleAuthGuard } from './guards/apple-auth.guard';
+import { GoogleAuthGuard } from './guards/google-auth.guard';
+import { JwtAuthGuard } from './guards/jwt.guard';
+import { MicrosoftAuthGuard } from './guards/microsoft-auth.guard';
+import { LocksmithAuthService } from './services/locksmith-auth.service';
+import { AppleAuthStrategy } from './strategies/apple-auth.strategy';
+import { GoogleAuthStrategy } from './strategies/google-auth.strategy';
+import { JwtAuthStrategy } from './strategies/jwt.strategy';
+import { MicrosoftAuthStrategy } from './strategies/microsoft-auth.strategy';
 
 export interface OAuthOptions {
   clientID: string;

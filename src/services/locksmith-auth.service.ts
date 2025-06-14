@@ -7,20 +7,13 @@ import { AuthProvider } from '../enums';
 import { LocksmithModuleOptions } from '../locksmith.module';
 import { JwtPayload } from '../strategies/jwt.strategy';
 
-export interface AccessToken {
-  accessToken: string;
-}
-
 export interface ILocksmithAuthService {
-  createAccessToken(payload: JwtPayload): Promise<AccessToken>;
+  createAccessToken(payload: JwtPayload): Promise<string>;
   createExternalAccessToken(
     payload: JwtPayload,
     externalId: string,
     authProvider: AuthProvider,
-  ): Promise<AccessToken>;
-  clearSessionCookie(res: {
-    clearCookie?: (name: string, options?: any) => any;
-  }): void;
+  ): Promise<string>;
 }
 
 @Injectable()
@@ -31,63 +24,50 @@ export class LocksmithAuthService implements ILocksmithAuthService {
     private readonly options: LocksmithModuleOptions,
 	) {}
 
-	private _cachedIssuer?: string; // Cache for the issuer value
+	private _issuerName?: string; // Cache for the issuer value
 
 	private resolveIssuer(): string | undefined {
-		if (this._cachedIssuer) return this._cachedIssuer; // Return cached value if available
+		if (this._issuerName) return this._issuerName; // Return cached value if available
 		if (this.options?.jwt?.issuerName) {
-			this._cachedIssuer = this.options.jwt.issuerName;
-			return this._cachedIssuer;
+			this._issuerName = this.options.jwt.issuerName;
+			return this._issuerName;
 		}
 		try {
 			const pkg = JSON.parse(
 				readFileSync(join(process.cwd(), 'package.json'), 'utf8'),
 			);
-			this._cachedIssuer = pkg.name as string;
-			return this._cachedIssuer;
+			this._issuerName = pkg.name as string;
+			return this._issuerName;
 		} catch {
 			return undefined;
 		}
 	}
 
-	async createAccessToken(payload: JwtPayload): Promise<AccessToken> {
+	async createAccessToken(payload: JwtPayload): Promise<string> {
 		const tokenPayload = { ...payload };
 		if (!tokenPayload.iss) {
 			const issuer = this.resolveIssuer();
 			if (issuer) tokenPayload.iss = issuer;
 		}
 		if (!tokenPayload.jti) tokenPayload.jti = uuid();
-		const accessToken = await this.jwtService.signAsync(tokenPayload);
-		return { accessToken };
+		return await this.jwtService.signAsync(tokenPayload);
 	}
 
 	async createExternalAccessToken(
 		payload: JwtPayload,
 		externalId: string,
 		authProvider: AuthProvider,
-	): Promise<AccessToken> {
+	): Promise<string> {
 		const tokenPayload = {
 			...payload,
 			externalId,
 			provider: authProvider,
-		} as JwtPayload & { externalId: string; provider: AuthProvider };
+		} as JwtPayload;
 		if (!tokenPayload.iss) {
 			const issuer = this.resolveIssuer();
 			if (issuer) tokenPayload.iss = issuer;
 		}
 		if (!tokenPayload.jti) tokenPayload.jti = uuid();
-		const accessToken = await this.jwtService.signAsync(tokenPayload);
-		return { accessToken };
-	}
-
-	clearSessionCookie(res: {
-    clearCookie?: (name: string, options?: any) => any;
-  }): void {
-		const name = this.options?.jwt?.sessionCookieName;
-		if (name && typeof res.clearCookie === 'function') {
-			const opts = this.options?.cookieOptions;
-			if (opts) res.clearCookie(name, opts);
-			else res.clearCookie(name);
-		}
+		return await this.jwtService.signAsync(tokenPayload);
 	}
 }

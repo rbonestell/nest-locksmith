@@ -1,32 +1,9 @@
-import { Test } from '@nestjs/testing';
-import { JwtModule } from '@nestjs/jwt';
-import { LocksmithAuthService } from './services/locksmith-auth.service';
 import { GoogleOauthController } from './controllers/google-auth.controller';
-import { LocksmithModuleOptions } from './locksmith.module';
 import { AuthProvider } from './enums';
+import { LocksmithModuleOptions } from './locksmith.module';
 import { ILocksmithAuthService } from './services/locksmith-auth.service';
 
 describe('Fastify compatibility', () => {
-	it('clearSessionCookie supports Fastify reply', async () => {
-		const moduleRef = await Test.createTestingModule({
-			imports: [JwtModule.register({ secret: 'test' })],
-			providers: [
-				LocksmithAuthService,
-				{
-					provide: 'LOCKSMITH_OPTIONS',
-					useValue: {
-						jwt: { sessionCookieName: 'sid' },
-						cookieOptions: { path: '/app' },
-					},
-				},
-			],
-		}).compile();
-
-		const service = moduleRef.get<LocksmithAuthService>(LocksmithAuthService);
-		const reply: any = { clearCookie: jest.fn() };
-		service.clearSessionCookie(reply);
-		expect(reply.clearCookie).toHaveBeenCalledWith('sid', { path: '/app' });
-	});
 
 	it('googleAuthRedirect works with Fastify reply', async () => {
 		const options: LocksmithModuleOptions = {
@@ -37,9 +14,8 @@ describe('Fastify compatibility', () => {
 		const authService: ILocksmithAuthService = {
 			createExternalAccessToken: jest
 				.fn()
-				.mockResolvedValue({ accessToken: 'token' }) as any,
+				.mockResolvedValue('token') as any,
 			createAccessToken: jest.fn() as any,
-			clearSessionCookie: jest.fn() as any,
 		};
 		const controller = new GoogleOauthController(options, authService);
 		const req: any = {
