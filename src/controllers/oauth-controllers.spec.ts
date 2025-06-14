@@ -1,8 +1,8 @@
-import { GoogleOauthController } from './google-auth.controller';
-import { MicrosoftOauthController } from './microsoft-auth.controller';
-import { AppleOauthController } from './apple-auth.controller';
 import { AuthProvider } from '../enums';
 import { ILocksmithAuthService } from '../services/locksmith-auth.service';
+import { AppleOauthController } from './apple-auth.controller';
+import { GoogleOauthController } from './google-auth.controller';
+import { MicrosoftOauthController } from './microsoft-auth.controller';
 
 describe('OAuth Controllers', () => {
 	const options = {
@@ -18,7 +18,7 @@ describe('OAuth Controllers', () => {
 		authService = {
 			createExternalAccessToken: jest
 				.fn()
-				.mockResolvedValue({ accessToken: 'token' }),
+				.mockResolvedValue('token'),
 		};
 		res = { cookie: jest.fn(), redirect: jest.fn() } as any;
 	});

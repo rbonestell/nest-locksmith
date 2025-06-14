@@ -1,11 +1,11 @@
 import { Controller, Get, Inject, Req, Res, UseGuards } from '@nestjs/common';
+import { AuthProvider } from '../enums';
 import { GoogleAuthGuard } from '../guards/google-auth.guard';
 import {
 	LOCKSMITH_AUTH_SERVICE,
 	LocksmithModuleOptions,
 } from '../locksmith.module';
 import { ILocksmithAuthService } from '../services/locksmith-auth.service';
-import { AuthProvider } from '../enums';
 
 @Controller('auth/google')
 export class GoogleOauthController {
@@ -31,7 +31,7 @@ export class GoogleOauthController {
   		username: req.user?.username,
   		name: req.user?.name,
   	};
-  	const { accessToken } = await this.authService.createExternalAccessToken(
+  	const accessToken = await this.authService.createExternalAccessToken(
   		payload,
   		req.user?.providerId,
   		AuthProvider.Google,
