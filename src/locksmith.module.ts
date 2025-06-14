@@ -20,6 +20,7 @@ import { LocksmithAuthService } from './services/locksmith-auth.service';
 import { GoogleOauthController } from './controllers/google-auth.controller';
 import { MicrosoftOauthController } from './controllers/microsoft-auth.controller';
 import { AppleOauthController } from './controllers/apple-auth.controller';
+import { CookieOptions } from 'express';
 
 export interface OAuthOptions {
   clientID: string;
@@ -54,8 +55,11 @@ export interface LocksmithModuleOptions {
   };
   /** Optional path used by OAuth controllers for the final redirect */
   redirectPath?: string;
-  /** Express cookie options used when setting the session cookie */
-  cookieOptions?: import('express').CookieOptions;
+  /**
+   * Cookie options used when setting or clearing the session cookie.
+   * Compatible with Express and Fastify (@fastify/cookie).
+   */
+  cookieOptions?: CookieOptions;
 }
 
 export interface LocksmithOptionsFactory {
