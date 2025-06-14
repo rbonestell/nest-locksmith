@@ -1,0 +1,18 @@
+{
+	"editor.insertSpaces": false,
+	"editor.tabSize": 2,
+	"editor.detectIndentation": false,
+	"editor.formatOnPaste": true,
+	"editor.codeLens": true,
+	"editor.renderWhitespace": "all",
+	"editor.codeActionsOnSave": {
+		"source.organizeImports": "explicit",
+		"source.fixAll.eslint": "explicit",
+	},
+	"javascript.referencesCodeLens.enabled": true,
+	"eslint.validate": [
+		"javascript",
+		"typescript"
+	],
+	"jest.runMode": "on-demand",
+}

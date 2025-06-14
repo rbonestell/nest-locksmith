@@ -35,27 +35,27 @@ export interface JwtPayload {
 
 @Injectable()
 export class JwtAuthStrategy extends PassportStrategy(Strategy) {
-  constructor(
+	constructor(
     @Inject('LOCKSMITH_OPTIONS')
-    options: LocksmithModuleOptions,
-  ) {
-    const extractJwtFromCookie = (req: any) => {
-      let token: string = '';
+    	options: LocksmithModuleOptions,
+	) {
+		const extractJwtFromCookie = (req: any) => {
+			let token: string = '';
 
-      if (req && req.cookies) {
-        token = req.cookies[options.jwt!.sessionCookieName] as string;
-      }
-      return token;
-    };
+			if (req && req.cookies) {
+				token = req.cookies[options.jwt!.sessionCookieName] as string;
+			}
+			return token;
+		};
 
-    super({
-      jwtFromRequest: extractJwtFromCookie,
-      ignoreExpiration: false,
-      secretOrKey: options.jwt!.secret,
-    });
-  }
+		super({
+			jwtFromRequest: extractJwtFromCookie,
+			ignoreExpiration: false,
+			secretOrKey: options.jwt!.secret,
+		});
+	}
 
-  validate(payload: JwtPayload) {
-    return { ...payload };
-  }
+	validate(payload: JwtPayload) {
+		return { ...payload };
+	}
 }

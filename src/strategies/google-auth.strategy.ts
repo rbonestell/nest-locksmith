@@ -6,30 +6,30 @@ import { AuthProvider } from '../enums';
 
 @Injectable()
 export class GoogleAuthStrategy extends PassportStrategy(
-  Strategy,
-  AuthProvider.Google,
+	Strategy,
+	AuthProvider.Google,
 ) {
-  constructor(
+	constructor(
     @Inject('LOCKSMITH_OPTIONS')
     private readonly options: LocksmithModuleOptions,
-  ) {
-    /* eslint-disable @typescript-eslint/no-unsafe-argument */
-    super({
-      ...(options?.external?.google as any),
-      scope: ['email', 'profile'],
-    });
-    /* eslint-enable @typescript-eslint/no-unsafe-argument */
-  }
+	) {
+		/* eslint-disable @typescript-eslint/no-unsafe-argument */
+		super({
+			...(options?.external?.google as any),
+			scope: ['email', 'profile'],
+		});
+		/* eslint-enable @typescript-eslint/no-unsafe-argument */
+	}
 
-  validate(_accessToken: string, _refreshToken: string, profile: Profile) {
-    // Ensure user email address is verified
-    const emailValidated = profile?.emails?.[0]?.verified ?? false;
-    if (!emailValidated) return null;
-    return {
-      provider: AuthProvider.Google,
-      providerId: profile?.id,
-      name: profile?.name?.givenName,
-      username: profile?.emails?.[0]?.value,
-    };
-  }
+	validate(_accessToken: string, _refreshToken: string, profile: Profile) {
+		// Ensure user email address is verified
+		const emailValidated = profile?.emails?.[0]?.verified ?? false;
+		if (!emailValidated) return null;
+		return {
+			provider: AuthProvider.Google,
+			providerId: profile?.id,
+			name: profile?.name?.givenName,
+			username: profile?.emails?.[0]?.value,
+		};
+	}
 }

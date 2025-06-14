@@ -18,72 +18,76 @@ export interface ILocksmithAuthService {
     externalId: string,
     authProvider: AuthProvider,
   ): Promise<AccessToken>;
-  clearSessionCookie(res: { clearCookie?: (name: string, options?: any) => any }): void;
+  clearSessionCookie(res: {
+    clearCookie?: (name: string, options?: any) => any;
+  }): void;
 }
 
 @Injectable()
 export class LocksmithAuthService implements ILocksmithAuthService {
-  constructor(
+	constructor(
     private readonly jwtService: JwtService,
     @Inject('LOCKSMITH_OPTIONS')
     private readonly options: LocksmithModuleOptions,
-  ) {}
+	) {}
 
-  private _cachedIssuer?: string; // Cache for the issuer value
+	private _cachedIssuer?: string; // Cache for the issuer value
 
-  private resolveIssuer(): string | undefined {
-    if (this._cachedIssuer) return this._cachedIssuer; // Return cached value if available
-    if (this.options?.jwt?.issuerName) {
-      this._cachedIssuer = this.options.jwt.issuerName;
-      return this._cachedIssuer;
-    }
-    try {
-      const pkg = JSON.parse(
-        readFileSync(join(process.cwd(), 'package.json'), 'utf8'),
-      );
-      this._cachedIssuer = pkg.name as string;
-      return this._cachedIssuer;
-    } catch {
-      return undefined;
-    }
-  }
+	private resolveIssuer(): string | undefined {
+		if (this._cachedIssuer) return this._cachedIssuer; // Return cached value if available
+		if (this.options?.jwt?.issuerName) {
+			this._cachedIssuer = this.options.jwt.issuerName;
+			return this._cachedIssuer;
+		}
+		try {
+			const pkg = JSON.parse(
+				readFileSync(join(process.cwd(), 'package.json'), 'utf8'),
+			);
+			this._cachedIssuer = pkg.name as string;
+			return this._cachedIssuer;
+		} catch {
+			return undefined;
+		}
+	}
 
-  async createAccessToken(payload: JwtPayload): Promise<AccessToken> {
-    const tokenPayload = { ...payload };
-    if (!tokenPayload.iss) {
-      const issuer = this.resolveIssuer();
-      if (issuer) tokenPayload.iss = issuer;
-    }
-    if (!tokenPayload.jti) tokenPayload.jti = uuid();
-    const accessToken = await this.jwtService.signAsync(tokenPayload);
-    return { accessToken };
-  }
+	async createAccessToken(payload: JwtPayload): Promise<AccessToken> {
+		const tokenPayload = { ...payload };
+		if (!tokenPayload.iss) {
+			const issuer = this.resolveIssuer();
+			if (issuer) tokenPayload.iss = issuer;
+		}
+		if (!tokenPayload.jti) tokenPayload.jti = uuid();
+		const accessToken = await this.jwtService.signAsync(tokenPayload);
+		return { accessToken };
+	}
 
-  async createExternalAccessToken(
-    payload: JwtPayload,
-    externalId: string,
-    authProvider: AuthProvider,
-  ): Promise<AccessToken> {
-    const tokenPayload = {
-      ...payload,
-      externalId,
-      provider: authProvider,
-    } as JwtPayload & { externalId: string; provider: AuthProvider };
-    if (!tokenPayload.iss) {
-      const issuer = this.resolveIssuer();
-      if (issuer) tokenPayload.iss = issuer;
-    }
-    if (!tokenPayload.jti) tokenPayload.jti = uuid();
-    const accessToken = await this.jwtService.signAsync(tokenPayload);
-    return { accessToken };
-  }
+	async createExternalAccessToken(
+		payload: JwtPayload,
+		externalId: string,
+		authProvider: AuthProvider,
+	): Promise<AccessToken> {
+		const tokenPayload = {
+			...payload,
+			externalId,
+			provider: authProvider,
+		} as JwtPayload & { externalId: string; provider: AuthProvider };
+		if (!tokenPayload.iss) {
+			const issuer = this.resolveIssuer();
+			if (issuer) tokenPayload.iss = issuer;
+		}
+		if (!tokenPayload.jti) tokenPayload.jti = uuid();
+		const accessToken = await this.jwtService.signAsync(tokenPayload);
+		return { accessToken };
+	}
 
-  clearSessionCookie(res: { clearCookie?: (name: string, options?: any) => any }): void {
-    const name = this.options?.jwt?.sessionCookieName;
-    if (name && typeof res.clearCookie === 'function') {
-      const opts = this.options?.cookieOptions;
-      if (opts) res.clearCookie(name, opts);
-      else res.clearCookie(name);
-    }
-  }
+	clearSessionCookie(res: {
+    clearCookie?: (name: string, options?: any) => any;
+  }): void {
+		const name = this.options?.jwt?.sessionCookieName;
+		if (name && typeof res.clearCookie === 'function') {
+			const opts = this.options?.cookieOptions;
+			if (opts) res.clearCookie(name, opts);
+			else res.clearCookie(name);
+		}
+	}
 }

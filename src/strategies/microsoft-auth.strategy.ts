@@ -11,31 +11,31 @@ export interface MicrosoftProfile extends Profile {
 
 @Injectable()
 export class MicrosoftAuthStrategy extends PassportStrategy(
-  Strategy,
-  AuthProvider.Microsoft,
+	Strategy,
+	AuthProvider.Microsoft,
 ) {
-  constructor(
+	constructor(
     @Inject('LOCKSMITH_OPTIONS')
     private readonly options: LocksmithModuleOptions,
-  ) {
-    /* eslint-disable @typescript-eslint/no-unsafe-argument */
-    super({
-      ...(options?.external?.microsoft as any),
-      scope: ['user.read'],
-    });
-    /* eslint-enable @typescript-eslint/no-unsafe-argument */
-  }
+	) {
+		/* eslint-disable @typescript-eslint/no-unsafe-argument */
+		super({
+			...(options?.external?.microsoft as any),
+			scope: ['user.read'],
+		});
+		/* eslint-enable @typescript-eslint/no-unsafe-argument */
+	}
 
-  validate(
-    _accessToken: string,
-    _refreshToken: string,
-    profile: MicrosoftProfile,
-  ) {
-    return {
-      provider: AuthProvider.Microsoft,
-      providerId: profile?.id,
-      name: profile?.displayName,
-      username: profile?.userPrincipalName,
-    };
-  }
+	validate(
+		_accessToken: string,
+		_refreshToken: string,
+		profile: MicrosoftProfile,
+	) {
+		return {
+			provider: AuthProvider.Microsoft,
+			providerId: profile?.id,
+			name: profile?.displayName,
+			username: profile?.userPrincipalName,
+		};
+	}
 }

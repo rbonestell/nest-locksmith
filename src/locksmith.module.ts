@@ -1,10 +1,10 @@
 import {
-  DynamicModule,
-  Logger,
-  Provider,
-  Module,
-  ModuleMetadata,
-  Type,
+	DynamicModule,
+	Logger,
+	Provider,
+	Module,
+	ModuleMetadata,
+	Type,
 } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
@@ -79,107 +79,107 @@ export interface LocksmithModuleAsyncOptions
 }
 
 export class LocksmithModule {
-  static forRoot(options?: LocksmithModuleOptions): DynamicModule {
-    const imports: Array<any> = [];
-    const exports: Array<any> = [];
-    const providers: Array<any> = [];
-    const controllers: Array<any> = [];
+	static forRoot(options?: LocksmithModuleOptions): DynamicModule {
+		const imports: Array<any> = [];
+		const exports: Array<any> = [];
+		const providers: Array<any> = [];
+		const controllers: Array<any> = [];
 
-    // Initialize JWT if options were provided
-    if (options?.jwt) {
-      imports.push(
-        JwtModule.register({
-          secret: options.jwt.secret,
-          signOptions: {
-            expiresIn: options.jwt.expiresIn,
-          },
-        }),
-      );
-      exports.push(JwtAuthGuard, JwtAuthStrategy, LOCKSMITH_AUTH_SERVICE);
-      providers.push(JwtAuthGuard, JwtAuthStrategy);
-    }
+		// Initialize JWT if options were provided
+		if (options?.jwt) {
+			imports.push(
+				JwtModule.register({
+					secret: options.jwt.secret,
+					signOptions: {
+						expiresIn: options.jwt.expiresIn,
+					},
+				}),
+			);
+			exports.push(JwtAuthGuard, JwtAuthStrategy, LOCKSMITH_AUTH_SERVICE);
+			providers.push(JwtAuthGuard, JwtAuthStrategy);
+		}
 
-    if (options?.external?.apple) {
-      exports.push(AppleAuthGuard, AppleAuthStrategy);
-      providers.push(AppleAuthGuard, AppleAuthStrategy);
-      controllers.push(AppleOauthController);
-    }
+		if (options?.external?.apple) {
+			exports.push(AppleAuthGuard, AppleAuthStrategy);
+			providers.push(AppleAuthGuard, AppleAuthStrategy);
+			controllers.push(AppleOauthController);
+		}
 
-    if (options?.external?.google) {
-      exports.push(GoogleAuthGuard, GoogleAuthStrategy);
-      providers.push(GoogleAuthGuard, GoogleAuthStrategy);
-      controllers.push(GoogleOauthController);
-    }
+		if (options?.external?.google) {
+			exports.push(GoogleAuthGuard, GoogleAuthStrategy);
+			providers.push(GoogleAuthGuard, GoogleAuthStrategy);
+			controllers.push(GoogleOauthController);
+		}
 
-    if (options?.external?.microsoft) {
-      exports.push(MicrosoftAuthGuard, MicrosoftAuthStrategy);
-      providers.push(MicrosoftAuthGuard, MicrosoftAuthStrategy);
-      controllers.push(MicrosoftOauthController);
-    }
+		if (options?.external?.microsoft) {
+			exports.push(MicrosoftAuthGuard, MicrosoftAuthStrategy);
+			providers.push(MicrosoftAuthGuard, MicrosoftAuthStrategy);
+			controllers.push(MicrosoftOauthController);
+		}
 
-    // Custom Locksmith Options Provider
-    const optionsProvider: Provider = {
-      provide: 'LOCKSMITH_OPTIONS',
-      useValue: options,
-    };
+		// Custom Locksmith Options Provider
+		const optionsProvider: Provider = {
+			provide: 'LOCKSMITH_OPTIONS',
+			useValue: options,
+		};
 
-    const authServiceProvider: Provider = {
-      provide: LOCKSMITH_AUTH_SERVICE,
-      useClass: LocksmithAuthService,
-    };
-    providers.push(authServiceProvider, optionsProvider, Logger);
+		const authServiceProvider: Provider = {
+			provide: LOCKSMITH_AUTH_SERVICE,
+			useClass: LocksmithAuthService,
+		};
+		providers.push(authServiceProvider, optionsProvider, Logger);
 
-    return {
-      module: LocksmithModule,
-      imports,
-      controllers,
-      exports,
-      providers,
-    };
-  }
+		return {
+			module: LocksmithModule,
+			imports,
+			controllers,
+			exports,
+			providers,
+		};
+	}
 
-  private static async createOptionsFromAsync(
-    asyncOptions: LocksmithModuleAsyncOptions,
-  ): Promise<LocksmithModuleOptions | undefined> {
+	private static async createOptionsFromAsync(
+		asyncOptions: LocksmithModuleAsyncOptions,
+	): Promise<LocksmithModuleOptions | undefined> {
     @Module({
-      imports: asyncOptions.imports ?? [],
-      providers: asyncOptions.useClass
-        ? [{ provide: asyncOptions.useClass, useClass: asyncOptions.useClass }]
-        : [],
+    	imports: asyncOptions.imports ?? [],
+    	providers: asyncOptions.useClass
+    		? [{ provide: asyncOptions.useClass, useClass: asyncOptions.useClass }]
+    		: [],
     })
-    class TempModule {}
+		class TempModule {}
 
     const app = await NestFactory.createApplicationContext(TempModule, {
-      logger: false,
+    	logger: false,
     });
     try {
-      if (asyncOptions.useFactory) {
-        const deps: unknown[] = await Promise.all(
-          (asyncOptions.inject ?? []).map((dep) =>
-            app.get<unknown>(
+    	if (asyncOptions.useFactory) {
+    		const deps: unknown[] = await Promise.all(
+    			(asyncOptions.inject ?? []).map((dep) =>
+    				app.get<unknown>(
               dep as
                 | string
                 | symbol
                 | (new (...args: any[]) => unknown)
                 | Type<unknown>,
-            ),
-          ),
-        );
-        return await asyncOptions.useFactory(...deps);
-      }
-      const optionsFactory = app.get<LocksmithOptionsFactory>(
-        asyncOptions.useExisting ?? asyncOptions.useClass!,
-      );
-      return await optionsFactory.createLocksmithOptions();
+    				),
+    			),
+    		);
+    		return await asyncOptions.useFactory(...deps);
+    	}
+    	const optionsFactory = app.get<LocksmithOptionsFactory>(
+    		asyncOptions.useExisting ?? asyncOptions.useClass!,
+    	);
+    	return await optionsFactory.createLocksmithOptions();
     } finally {
-      await app.close();
+    	await app.close();
     }
-  }
+	}
 
-  static async forRootAsync(
-    options: LocksmithModuleAsyncOptions,
-  ): Promise<DynamicModule> {
-    const resolvedOptions = await this.createOptionsFromAsync(options);
-    return this.forRoot(resolvedOptions);
-  }
+	static async forRootAsync(
+		options: LocksmithModuleAsyncOptions,
+	): Promise<DynamicModule> {
+		const resolvedOptions = await this.createOptionsFromAsync(options);
+		return this.forRoot(resolvedOptions);
+	}
 }
