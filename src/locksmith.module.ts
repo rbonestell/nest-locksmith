@@ -79,25 +79,23 @@ export interface LocksmithModuleAsyncOptions
 }
 
 export class LocksmithModule {
-	static forRoot(options?: LocksmithModuleOptions): DynamicModule {
+	static forRoot(options: LocksmithModuleOptions): DynamicModule {
 		const imports: Array<any> = [];
 		const exports: Array<any> = [];
 		const providers: Array<any> = [];
 		const controllers: Array<any> = [];
 
-		// Initialize JWT if options were provided
-		if (options?.jwt) {
-			imports.push(
-				JwtModule.register({
-					secret: options.jwt.secret,
-					signOptions: {
-						expiresIn: options.jwt.expiresIn,
-					},
-				}),
-			);
-			exports.push(JwtAuthGuard, JwtAuthStrategy, LOCKSMITH_AUTH_SERVICE);
-			providers.push(JwtAuthGuard, JwtAuthStrategy);
-		}
+		// Initialize JWT
+		imports.push(
+			JwtModule.register({
+				secret: options.jwt!.secret,
+				signOptions: {
+					expiresIn: options.jwt!.expiresIn,
+				},
+			}),
+		);
+		exports.push(JwtAuthGuard, JwtAuthStrategy, LOCKSMITH_AUTH_SERVICE);
+		providers.push(JwtAuthGuard, JwtAuthStrategy);
 
 		if (options?.external?.apple) {
 			exports.push(AppleAuthGuard, AppleAuthStrategy);
@@ -140,7 +138,7 @@ export class LocksmithModule {
 
 	private static async createOptionsFromAsync(
 		asyncOptions: LocksmithModuleAsyncOptions,
-	): Promise<LocksmithModuleOptions | undefined> {
+	): Promise<LocksmithModuleOptions> {
     @Module({
     	imports: asyncOptions.imports ?? [],
     	providers: asyncOptions.useClass
